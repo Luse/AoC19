@@ -1,8 +1,25 @@
-fn calculate (input: u32) -> u32{
+fn calculate_fuel (input: u32) -> Option<u32>{
     let mut _i = input;
-    let _i = _i/3;
-    let _i = _i-2;
-    return _i
+     if _i.checked_rem(3) == None { 
+        return None
+    }
+    _i = _i/3;
+    if _i.checked_sub(2) == None {
+        return None
+    }
+     _i = _i-2;
+    return Some(_i);
+}
+
+fn calculate_total_fuel(mass: u32) -> u32 {
+    let mut total_mass: u32 = 0;
+    let mut _mass: u32 = mass;
+
+    while calculate_fuel(_mass) != None {
+        _mass = calculate_fuel(_mass).unwrap();
+        total_mass += _mass;
+    }
+    return total_mass;
 }
 
 pub fn rocket_science() -> u32{
@@ -19,8 +36,8 @@ pub fn rocket_science() -> u32{
         116700, 70493, 62383, 100870, 110806,
     ];
     for x in _array.iter(){
-        let val = *x;
-        sum += calculate(val);
+        let val = *x as u32;
+        sum += calculate_total_fuel(val);
     }
     return sum;
 }
@@ -30,9 +47,15 @@ mod tests {
     use super::*;
     #[test]
 fn it_should_calculate_correctly() {
-    assert_eq!(calculate(12),2);
-    assert_eq!(calculate(14),2);
-    assert_eq!(calculate(1969),654);
-    assert_eq!(calculate(100756),33583);
+    assert_eq!(calculate_fuel(12),Some(2));
+    assert_eq!(calculate_fuel(14),Some(2));
+    assert_eq!(calculate_fuel(1969),Some(654));
+    assert_eq!(calculate_fuel(100756),Some(33583));
+}
+#[test]
+fn it_should_calculate_fuel_correctly() {
+    assert_eq!(calculate_total_fuel(14),2);
+    assert_eq!(calculate_total_fuel(1969),966);
+    assert_eq!(calculate_total_fuel(100756),50346);
 }
 }
